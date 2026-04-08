@@ -66,6 +66,11 @@ export const ItemFormScreen = () => {
       return;
     }
 
+    if (minQtd < 1) {
+      Alert.alert('Erro', 'O estoque mínimo deve ser no mínimo 1.');
+      return;
+    }
+
     if (price !== undefined && (isNaN(price) || price < 0)) {
       Alert.alert('Erro', 'O valor deve ser um número não negativo.');
       return;

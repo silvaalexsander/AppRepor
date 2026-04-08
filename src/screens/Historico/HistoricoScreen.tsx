@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, FlatList, Text, SafeAreaView } from 'react-native';
+import { View, StyleSheet, FlatList, Text, SafeAreaView, Alert, TouchableOpacity } from 'react-native';
 import { useStore } from '../../store';
 import { colors, spacing } from '../../theme';
 import { formatDate } from '../../utils';
@@ -7,6 +7,18 @@ import { ArrowDownRight, ArrowUpRight, PlusCircle, RefreshCw } from 'lucide-reac
 
 export const HistoricoScreen = () => {
   const movements = useStore((state) => state.movements);
+  const clearMovements = useStore((state) => state.clearMovements);
+
+  const handleClear = () => {
+    Alert.alert(
+      'Limpar Histórico',
+      'Tem certeza que deseja apagar todo o histórico de movimentações?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Limpar', style: 'destructive', onPress: clearMovements },
+      ]
+    );
+  };
 
   const getMovementIcon = (type: string) => {
     switch (type) {
@@ -31,7 +43,12 @@ export const HistoricoScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Histórico de Movimentações</Text>
+        <Text style={styles.title}>Histórico</Text>
+        {movements.length > 0 && (
+          <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
+            <Text style={styles.clearButtonText}>Limpar</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {movements.length === 0 ? (
@@ -78,15 +95,31 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: spacing.md,
+    paddingTop: spacing.lg,
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '800',
     color: colors.text,
+    letterSpacing: -0.5,
+  },
+  clearButton: {
+    backgroundColor: '#FEE2E2',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: 100,
+  },
+  clearButtonText: {
+    color: colors.error,
+    fontWeight: '600',
+    fontSize: 14,
   },
   listContent: {
     padding: spacing.md,

@@ -13,6 +13,7 @@ interface AppState {
   deleteItem: (id: string) => void;
   increaseItem: (id: string, amount: number, unitPrice?: number) => void;
   decreaseItem: (id: string, amount: number) => void;
+  clearMovements: () => void;
   getItemById: (id: string) => Item | undefined;
 }
 
@@ -136,6 +137,11 @@ export const useStore = create<AppState>((set, get) => ({
 
       return { items: newItems, movements: newMovements };
     });
+  },
+
+  clearMovements: () => {
+    set({ movements: [] });
+    saveMovements([]);
   },
 
   getItemById: (id) => {

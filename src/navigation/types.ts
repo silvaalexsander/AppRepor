@@ -5,6 +5,7 @@ export type BottomTabParamList = {
   Estoque: undefined;
   Comprar: undefined;
   Historico: undefined;
+  Detalhes: undefined;
 };
 
 export type RootStackParamList = {

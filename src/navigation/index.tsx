@@ -2,11 +2,12 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Package, ShoppingCart, Clock } from 'lucide-react-native';
+import { Package, ShoppingCart, Clock, PieChart } from 'lucide-react-native';
 
 import { EstoqueScreen } from '../screens/Estoque/EstoqueScreen';
 import { ComprarScreen } from '../screens/Comprar/ComprarScreen';
 import { HistoricoScreen } from '../screens/Historico/HistoricoScreen';
+import { DetalhesScreen } from '../screens/Detalhes/DetalhesScreen';
 import { ItemFormScreen } from '../screens/ItemForm/ItemFormScreen';
 import { ItemDetailsScreen } from '../screens/ItemDetails/ItemDetailsScreen';
 
@@ -46,6 +47,13 @@ const TabNavigator = () => {
         options={{
           title: 'Histórico',
           tabBarIcon: ({ color, size }) => <Clock color={color} size={size} />
+        }}
+      />
+      <Tab.Screen 
+        name="Detalhes" 
+        component={DetalhesScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => <PieChart color={color} size={size} />
         }}
       />
     </Tab.Navigator>
