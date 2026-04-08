@@ -22,6 +22,7 @@ export interface Item {
   unit: UnitType;
   currentQuantity: number;
   minimumQuantity: number;
+  lastUnitPrice?: number;
   active: boolean;
   createdAt: string;
   updatedAt: string;

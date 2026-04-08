@@ -11,7 +11,7 @@ interface AppState {
   createItem: (item: Omit<Item, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateItem: (id: string, item: Partial<Item>) => void;
   deleteItem: (id: string) => void;
-  increaseItem: (id: string, amount: number) => void;
+  increaseItem: (id: string, amount: number, unitPrice?: number) => void;
   decreaseItem: (id: string, amount: number) => void;
   getItemById: (id: string) => Item | undefined;
 }
@@ -75,14 +75,19 @@ export const useStore = create<AppState>((set, get) => ({
     });
   },
 
-  increaseItem: (id, amount) => {
+  increaseItem: (id, amount, unitPrice?) => {
     const now = new Date().toISOString();
     set((state) => {
       const itemToUpdate = state.items.find(item => item.id === id);
       if (!itemToUpdate) return state;
 
       const newQuantity = itemToUpdate.currentQuantity + amount;
-      const updatedItem = { ...itemToUpdate, currentQuantity: newQuantity, updatedAt: now };
+      const updatedItem = {
+        ...itemToUpdate,
+        currentQuantity: newQuantity,
+        updatedAt: now,
+        ...(unitPrice !== undefined && unitPrice > 0 ? { lastUnitPrice: unitPrice } : {}),
+      };
 
       const newMovement: Movement = {
         id: generateId(),

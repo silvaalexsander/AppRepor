@@ -11,7 +11,6 @@ import { CATEGORIES } from '../../constants';
 export const EstoqueScreen = () => {
   const navigation = useNavigation<RootNavigationProp>();
   const items = useStore((state) => state.items);
-  const increaseItem = useStore((state) => state.increaseItem);
   const decreaseItem = useStore((state) => state.decreaseItem);
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -82,7 +81,6 @@ export const EstoqueScreen = () => {
             <ItemCard
               item={item}
               onPress={() => handleItemPress(item.id)}
-              onIncrease={() => increaseItem(item.id, 1)}
               onDecrease={() => decreaseItem(item.id, 1)}
             />
           )}

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, Text, ScrollView, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Text, ScrollView, Alert, TextInput, Modal, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { RootNavigationProp, RootStackParamList } from '../../navigation/types';
 import { useStore } from '../../store';
@@ -28,6 +28,20 @@ export const ItemDetailsScreen = () => {
 
   const handleEdit = () => {
     navigation.navigate('ItemForm', { id: item.id });
+  };
+
+  const [showPriceModal, setShowPriceModal] = useState(false);
+  const [priceInput, setPriceInput] = useState('');
+
+  const handleIncrease = () => {
+    setShowPriceModal(true);
+  };
+
+  const confirmIncrease = () => {
+    const price = priceInput ? parseFloat(priceInput.replace(',', '.')) : undefined;
+    increaseItem(item.id, 1, price);
+    setPriceInput('');
+    setShowPriceModal(false);
   };
 
   const handleDelete = () => {
@@ -71,6 +85,15 @@ export const ItemDetailsScreen = () => {
           </View>
         </View>
 
+        {item.lastUnitPrice !== undefined && (
+          <View style={styles.priceContainer}>
+            <Text style={styles.infoLabel}>Últ. preço pago</Text>
+            <Text style={styles.priceValue}>
+              R$ {item.lastUnitPrice.toFixed(2).replace('.', ',')} <Text style={styles.unit}>/{item.unit}</Text>
+            </Text>
+          </View>
+        )}
+
         <View style={styles.datesContainer}>
           <Text style={styles.dateText}>Criado em: {formatDate(item.createdAt)}</Text>
           <Text style={styles.dateText}>Atualizado em: {formatDate(item.updatedAt)}</Text>
@@ -88,7 +111,7 @@ export const ItemDetailsScreen = () => {
           />
           <Button 
             title="+ Aumentar" 
-            onPress={() => increaseItem(item.id, 1)} 
+            onPress={handleIncrease} 
             variant="outline"
             style={styles.actionButton}
           />
@@ -109,6 +132,37 @@ export const ItemDetailsScreen = () => {
           style={styles.manageButton}
         />
       </View>
+
+      <Modal visible={showPriceModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Adicionar ao estoque</Text>
+            <Text style={styles.modalSubtitle}>Informe o valor pago por {item.unit} (opcional)</Text>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="0,00"
+              keyboardType="decimal-pad"
+              value={priceInput}
+              onChangeText={setPriceInput}
+              placeholderTextColor={colors.textSecondary}
+            />
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={styles.modalCancelBtn}
+                onPress={() => { setPriceInput(''); setShowPriceModal(false); }}
+              >
+                <Text style={styles.modalCancelText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalSkipBtn} onPress={() => { increaseItem(item.id, 1); setPriceInput(''); setShowPriceModal(false); }}>
+                <Text style={styles.modalSkipText}>Pular</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalConfirmBtn} onPress={confirmIncrease}>
+                <Text style={styles.modalConfirmText}>Confirmar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -206,5 +260,86 @@ const styles = StyleSheet.create({
   },
   manageButton: {
     //
+  },
+  priceContainer: {
+    backgroundColor: '#ECFDF5',
+    padding: spacing.md,
+    borderRadius: 8,
+    marginBottom: spacing.md,
+  },
+  priceValue: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: colors.success,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.lg,
+  },
+  modalContent: {
+    backgroundColor: colors.surface,
+    borderRadius: 20,
+    padding: spacing.lg,
+    width: '100%',
+    maxWidth: 360,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginBottom: spacing.md,
+  },
+  modalInput: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 14,
+    fontSize: 18,
+    color: colors.text,
+    marginBottom: spacing.md,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+  },
+  modalCancelBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: spacing.md,
+  },
+  modalCancelText: {
+    color: colors.textSecondary,
+    fontWeight: '600',
+    fontSize: 15,
+  },
+  modalSkipBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: spacing.md,
+  },
+  modalSkipText: {
+    color: colors.primary,
+    fontWeight: '600',
+    fontSize: 15,
+  },
+  modalConfirmBtn: {
+    backgroundColor: colors.primary,
+    paddingVertical: 10,
+    paddingHorizontal: spacing.lg,
+    borderRadius: 100,
+  },
+  modalConfirmText: {
+    color: colors.surface,
+    fontWeight: '700',
+    fontSize: 15,
   },
 });

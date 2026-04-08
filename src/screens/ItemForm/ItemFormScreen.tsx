@@ -16,6 +16,7 @@ interface FormData {
   unit: UnitType;
   currentQuantity: string;
   minimumQuantity: string;
+  unitPrice: string;
 }
 
 export const ItemFormScreen = () => {
@@ -29,15 +30,18 @@ export const ItemFormScreen = () => {
   const createItem = useStore((state) => state.createItem);
   const updateItem = useStore((state) => state.updateItem);
 
-  const { control, handleSubmit, setValue, formState: { errors } } = useForm<FormData>({
+  const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       name: '',
       category: CATEGORIES[0],
       unit: UNITS[0],
       currentQuantity: '0',
       minimumQuantity: '0',
+      unitPrice: '',
     }
   });
+
+  const selectedUnit = watch('unit');
 
   useEffect(() => {
     if (isEditing && itemToEdit) {
@@ -46,15 +50,24 @@ export const ItemFormScreen = () => {
       setValue('unit', itemToEdit.unit);
       setValue('currentQuantity', itemToEdit.currentQuantity.toFixed(1).replace('.', ','));
       setValue('minimumQuantity', itemToEdit.minimumQuantity.toFixed(1).replace('.', ','));
+      if (itemToEdit.lastUnitPrice !== undefined) {
+        setValue('unitPrice', itemToEdit.lastUnitPrice.toFixed(2).replace('.', ','));
+      }
     }
   }, [isEditing, itemToEdit, setValue]);
 
   const onSubmit = (data: FormData) => {
     const currentQtd = parseFloat(data.currentQuantity.replace(',', '.'));
     const minQtd = parseFloat(data.minimumQuantity.replace(',', '.'));
+    const price = data.unitPrice ? parseFloat(data.unitPrice.replace(',', '.')) : undefined;
 
     if (isNaN(currentQtd) || isNaN(minQtd) || currentQtd < 0 || minQtd < 0) {
       Alert.alert('Erro', 'As quantidades devem ser números não negativos.');
+      return;
+    }
+
+    if (price !== undefined && (isNaN(price) || price < 0)) {
+      Alert.alert('Erro', 'O valor deve ser um número não negativo.');
       return;
     }
 
@@ -65,6 +78,7 @@ export const ItemFormScreen = () => {
         unit: data.unit,
         currentQuantity: currentQtd,
         minimumQuantity: minQtd,
+        ...(price !== undefined && price > 0 ? { lastUnitPrice: price } : {}),
       });
     } else {
       createItem({
@@ -73,6 +87,7 @@ export const ItemFormScreen = () => {
         unit: data.unit,
         currentQuantity: currentQtd,
         minimumQuantity: minQtd,
+        ...(price !== undefined && price > 0 ? { lastUnitPrice: price } : {}),
         active: true,
       });
     }
@@ -178,6 +193,21 @@ export const ItemFormScreen = () => {
           />
         </View>
       </View>
+
+      <Controller
+        control={control}
+        name="unitPrice"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <Input
+            label={`Valor pago (R$/${selectedUnit})`}
+            placeholder="0,00"
+            keyboardType="decimal-pad"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+      />
 
       <View style={styles.buttonContainer}>
         <Button 

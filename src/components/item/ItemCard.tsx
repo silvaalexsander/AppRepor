@@ -3,16 +3,15 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Item, StockStatus } from '../../types';
 import { colors, spacing } from '../../theme';
 import { Badge } from '../common/Badge';
-import { PlusCircle, MinusCircle } from 'lucide-react-native';
+import { MinusCircle } from 'lucide-react-native';
 
 interface ItemCardProps {
   item: Item;
   onPress: () => void;
-  onIncrease: () => void;
   onDecrease: () => void;
 }
 
-export const ItemCard: React.FC<ItemCardProps> = ({ item, onPress, onIncrease, onDecrease }) => {
+export const ItemCard: React.FC<ItemCardProps> = ({ item, onPress, onDecrease }) => {
   const getStatus = (): StockStatus => {
     if (item.currentQuantity <= item.minimumQuantity) return 'BUY';
     if (item.currentQuantity <= item.minimumQuantity * 1.4) return 'LOW'; // Baixo até 40% acima do mínimo
@@ -38,12 +37,17 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item, onPress, onIncrease, o
           <Text style={styles.minQuantity}>Mínimo: {item.minimumQuantity.toFixed(1).replace('.', ',')}</Text>
         </View>
 
-        <View style={styles.actions}>
+        <View style={styles.rightSection}>
+          {item.lastUnitPrice !== undefined && item.lastUnitPrice > 0 && (
+            <View style={styles.priceTag}>
+              <Text style={styles.priceLabel}>Últ. preço</Text>
+              <Text style={styles.priceValue}>
+                R$ {item.lastUnitPrice.toFixed(2).replace('.', ',')}
+              </Text>
+            </View>
+          )}
           <TouchableOpacity style={styles.actionButton} onPress={onDecrease}>
             <MinusCircle size={28} color={item.currentQuantity === 0 ? colors.border : colors.error} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton} onPress={onIncrease}>
-            <PlusCircle size={28} color={colors.success} />
           </TouchableOpacity>
         </View>
       </View>
@@ -114,9 +118,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.textSecondary,
   },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.md,
+  rightSection: {
+    alignItems: 'flex-end',
+    gap: spacing.sm,
+  },
+  priceTag: {
+    alignItems: 'flex-end',
+  },
+  priceLabel: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    marginBottom: 1,
+  },
+  priceValue: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.success,
   },
   actionButton: {
     backgroundColor: colors.background,
