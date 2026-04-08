@@ -1,8 +1,11 @@
-import React, { useMemo } from 'react';
-import { View, StyleSheet, FlatList, Text, SafeAreaView } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { View, StyleSheet, FlatList, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { SortOption } from '../../types';
+import { ArrowDownAZ, Banknote, Calendar } from 'lucide-react-native';
 import { useStore } from '../../store';
 import { colors, spacing } from '../../theme';
 import { ShoppingCart } from 'lucide-react-native';
+import { CATEGORIES } from '../../constants';
 
 export const ComprarScreen = () => {
   const items = useStore((state) => state.items);
@@ -11,15 +14,49 @@ export const ComprarScreen = () => {
     return items.filter(item => item.currentQuantity <= item.minimumQuantity);
   }, [items]);
 
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<SortOption>('alphabetical');
+
+  const filteredItemsToBuy = useMemo(() => {
+    let result = selectedCategories.length === 0
+      ? [...itemsToBuy]
+      : itemsToBuy.filter(item => selectedCategories.includes(item.category));
+
+    return result.sort((a, b) => {
+      if (sortBy === 'alphabetical') {
+        return a.name.localeCompare(b.name);
+      }
+      if (sortBy === 'price') {
+        return (b.lastUnitPrice || 0) - (a.lastUnitPrice || 0);
+      }
+      if (sortBy === 'date') {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+      return 0;
+    });
+  }, [itemsToBuy, selectedCategories, sortBy]);
+
+  const toggleCategory = (cat: string | null) => {
+    if (cat === null) {
+      setSelectedCategories([]);
+    } else {
+      setSelectedCategories(prev =>
+        prev.includes(cat)
+          ? prev.filter(c => c !== cat)
+          : [...prev, cat]
+      );
+    }
+  };
+
   const totalEstimate = useMemo(() => {
-    return itemsToBuy.reduce((sum, item) => {
+    return filteredItemsToBuy.reduce((sum, item) => {
       if (item.lastUnitPrice && item.lastUnitPrice > 0) {
         const needed = Math.max(0, item.minimumQuantity - item.currentQuantity);
         return sum + (needed * item.lastUnitPrice);
       }
       return sum;
     }, 0);
-  }, [itemsToBuy]);
+  }, [filteredItemsToBuy]);
 
   const formatCurrency = (value: number) => {
     return `R$ ${value.toFixed(2).replace('.', ',')}`;
@@ -39,8 +76,57 @@ export const ComprarScreen = () => {
         </View>
       ) : (
         <>
+          <View style={styles.filterSection}>
+            <View style={styles.categoriesRow}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipsContainer}>
+                <TouchableOpacity
+                  style={[styles.chip, selectedCategories.length === 0 && styles.chipSelected]}
+                  onPress={() => toggleCategory(null)}
+                >
+                  <Text style={[styles.chipText, selectedCategories.length === 0 && styles.chipTextSelected]}>Todas</Text>
+                </TouchableOpacity>
+                {CATEGORIES.map(cat => (
+                  <TouchableOpacity
+                    key={cat}
+                    style={[styles.chip, selectedCategories.includes(cat) && styles.chipSelected]}
+                    onPress={() => toggleCategory(cat)}
+                  >
+                    <Text style={[styles.chipText, selectedCategories.includes(cat) && styles.chipTextSelected]}>{cat}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+
+            <View style={styles.sortingRow}>
+              <Text style={styles.sortingLabel}>Ordenação:</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortChipsContainer}>
+                <TouchableOpacity
+                  style={[styles.sortChip, sortBy === 'alphabetical' && styles.sortChipSelected]}
+                  onPress={() => setSortBy('alphabetical')}
+                >
+                  <ArrowDownAZ size={14} color={sortBy === 'alphabetical' ? colors.surface : colors.textSecondary} />
+                  <Text style={[styles.sortChipText, sortBy === 'alphabetical' && styles.sortChipTextSelected]}>A-Z</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.sortChip, sortBy === 'price' && styles.sortChipSelected]}
+                  onPress={() => setSortBy('price')}
+                >
+                  <Banknote size={14} color={sortBy === 'price' ? colors.surface : colors.textSecondary} />
+                  <Text style={[styles.sortChipText, sortBy === 'price' && styles.sortChipTextSelected]}>Preço</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.sortChip, sortBy === 'date' && styles.sortChipSelected]}
+                  onPress={() => setSortBy('date')}
+                >
+                  <Calendar size={14} color={sortBy === 'date' ? colors.surface : colors.textSecondary} />
+                  <Text style={[styles.sortChipText, sortBy === 'date' && styles.sortChipTextSelected]}>Data</Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
+          </View>
+
           <FlatList
-            data={itemsToBuy}
+            data={filteredItemsToBuy}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContent}
             renderItem={({ item }) => {
@@ -113,8 +199,81 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     paddingTop: spacing.lg,
     backgroundColor: colors.surface,
+  },
+  filterSection: {
+    backgroundColor: colors.surface,
+    paddingBottom: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
+  },
+  categoriesRow: {
+    marginBottom: spacing.xs,
+  },
+  sortingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    marginTop: 2,
+  },
+  chipsContainer: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    gap: spacing.sm,
+  },
+  chip: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: 10,
+    borderRadius: 100,
+    backgroundColor: '#F1F5F9',
+    marginRight: spacing.sm,
+  },
+  chipSelected: {
+    backgroundColor: colors.primary,
+  },
+  chipText: {
+    color: colors.textSecondary,
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  chipTextSelected: {
+    color: colors.surface,
+    fontWeight: '700',
+  },
+  sortingLabel: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    fontWeight: '700',
+    marginRight: spacing.sm,
+    marginLeft: spacing.sm,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  sortChipsContainer: {
+    gap: spacing.xs,
+  },
+  sortChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: 6,
+    backgroundColor: '#F8FAFC',
+    marginRight: spacing.xs,
+    gap: 4,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  sortChipSelected: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  sortChipText: {
+    color: colors.textSecondary,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  sortChipTextSelected: {
+    color: colors.surface,
   },
   title: {
     fontSize: 28,

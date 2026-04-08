@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Alert, Platform, KeyboardAvoidingView } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import { RootNavigationProp, RootStackParamList } from '../../navigation/types';
@@ -101,7 +101,12 @@ export const ItemFormScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 80}
+    >
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <Controller
         control={control}
         rules={{ required: 'O nome é obrigatório' }}
@@ -221,6 +226,7 @@ export const ItemFormScreen = () => {
         />
       </View>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

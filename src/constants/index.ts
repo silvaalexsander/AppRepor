@@ -1,14 +1,15 @@
 import { ItemCategory, UnitType } from '../types';
 
 export const CATEGORIES: ItemCategory[] = [
-  'Mercearia',
-  'Bebidas',
   'Açougue',
-  'Matinais',
-  'Peixaria',
+  'Bebidas',
+  'Farmácia',
   'Higiene',
+  'Hortifruti',
   'Limpeza',
+  'Mercearia',
   'Outros',
+  'Pets',
 ];
 
 export const UNITS: UnitType[] = ['un', 'kg', 'g', 'l', 'ml', 'pct', 'cx'];
