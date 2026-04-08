@@ -40,10 +40,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item, onPress, onIncrease, o
 
         <View style={styles.actions}>
           <TouchableOpacity style={styles.actionButton} onPress={onDecrease}>
-            <MinusCircle size={32} color={item.currentQuantity === 0 ? colors.border : colors.error} />
+            <MinusCircle size={28} color={item.currentQuantity === 0 ? colors.border : colors.error} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton} onPress={onIncrease}>
-            <PlusCircle size={32} color={colors.success} />
+            <PlusCircle size={28} color={colors.success} />
           </TouchableOpacity>
         </View>
       </View>
@@ -54,16 +54,16 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item, onPress, onIncrease, o
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: spacing.md,
+    borderRadius: 20,
+    padding: spacing.lg,
     marginBottom: spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    elevation: 4,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(0,0,0,0.03)',
   },
   cardHeader: {
     flexDirection: 'row',
@@ -76,13 +76,13 @@ const styles = StyleSheet.create({
     paddingRight: spacing.md,
   },
   name: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '700',
     color: colors.text,
     marginBottom: 4,
   },
   category: {
-    fontSize: 14,
+    fontSize: 15,
     color: colors.textSecondary,
   },
   cardBody: {
@@ -99,10 +99,11 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   quantityValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '900',
     color: colors.text,
     marginBottom: 2,
+    letterSpacing: -0.5,
   },
   unit: {
     fontSize: 16,
@@ -115,9 +116,11 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   actionButton: {
-    padding: spacing.xs,
+    backgroundColor: colors.background,
+    borderRadius: 100,
+    padding: spacing.sm,
   },
 });

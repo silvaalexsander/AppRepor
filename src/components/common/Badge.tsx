@@ -32,9 +32,9 @@ export const Badge: React.FC<BadgeProps> = ({ status }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: 100,
     alignSelf: 'flex-start',
   },
   text: {
