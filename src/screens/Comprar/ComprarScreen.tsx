@@ -37,13 +37,13 @@ export const ComprarScreen = () => {
                 <View style={styles.infoCol}>
                   <Text style={styles.label}>Atual</Text>
                   <Text style={[styles.value, { color: colors.error }]}>
-                    {item.currentQuantity} <Text style={styles.unit}>{item.unit}</Text>
+                    {item.currentQuantity.toFixed(1).replace('.', ',')} <Text style={styles.unit}>{item.unit}</Text>
                   </Text>
                 </View>
                 <View style={styles.infoCol}>
                   <Text style={styles.label}>Mínimo ideal</Text>
                   <Text style={styles.value}>
-                    {item.minimumQuantity} <Text style={styles.unit}>{item.unit}</Text>
+                    {item.minimumQuantity.toFixed(1).replace('.', ',')} <Text style={styles.unit}>{item.unit}</Text>
                   </Text>
                 </View>
               </View>

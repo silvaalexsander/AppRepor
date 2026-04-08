@@ -15,7 +15,7 @@ interface ItemCardProps {
 export const ItemCard: React.FC<ItemCardProps> = ({ item, onPress, onIncrease, onDecrease }) => {
   const getStatus = (): StockStatus => {
     if (item.currentQuantity <= item.minimumQuantity) return 'BUY';
-    if (item.currentQuantity <= item.minimumQuantity * 1.5) return 'LOW'; // Low if within 50% above minimum
+    if (item.currentQuantity <= item.minimumQuantity * 1.4) return 'LOW'; // Baixo até 40% acima do mínimo
     return 'OK';
   };
 
@@ -33,9 +33,9 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item, onPress, onIncrease, o
         <View style={styles.quantityContainer}>
           <Text style={styles.quantityLabel}>Qtd atual</Text>
           <Text style={styles.quantityValue}>
-            {item.currentQuantity} <Text style={styles.unit}>{item.unit}</Text>
+            {item.currentQuantity.toFixed(1).replace('.', ',')} <Text style={styles.unit}>{item.unit}</Text>
           </Text>
-          <Text style={styles.minQuantity}>Mínimo: {item.minimumQuantity}</Text>
+          <Text style={styles.minQuantity}>Mínimo: {item.minimumQuantity.toFixed(1).replace('.', ',')}</Text>
         </View>
 
         <View style={styles.actions}>

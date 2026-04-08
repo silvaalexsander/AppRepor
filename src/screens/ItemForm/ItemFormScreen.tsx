@@ -44,14 +44,14 @@ export const ItemFormScreen = () => {
       setValue('name', itemToEdit.name);
       setValue('category', itemToEdit.category);
       setValue('unit', itemToEdit.unit);
-      setValue('currentQuantity', itemToEdit.currentQuantity.toString());
-      setValue('minimumQuantity', itemToEdit.minimumQuantity.toString());
+      setValue('currentQuantity', itemToEdit.currentQuantity.toFixed(1).replace('.', ','));
+      setValue('minimumQuantity', itemToEdit.minimumQuantity.toFixed(1).replace('.', ','));
     }
   }, [isEditing, itemToEdit, setValue]);
 
   const onSubmit = (data: FormData) => {
-    const currentQtd = parseInt(data.currentQuantity, 10);
-    const minQtd = parseInt(data.minimumQuantity, 10);
+    const currentQtd = parseFloat(data.currentQuantity.replace(',', '.'));
+    const minQtd = parseFloat(data.minimumQuantity.replace(',', '.'));
 
     if (isNaN(currentQtd) || isNaN(minQtd) || currentQtd < 0 || minQtd < 0) {
       Alert.alert('Erro', 'As quantidades devem ser números não negativos.');
@@ -149,8 +149,8 @@ export const ItemFormScreen = () => {
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
                 label="Quantidade Atual"
-                placeholder="0"
-                keyboardType="numeric"
+                placeholder="0,0"
+                keyboardType="decimal-pad"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -167,8 +167,8 @@ export const ItemFormScreen = () => {
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
                 label="Mínimo Ideal"
-                placeholder="0"
-                keyboardType="numeric"
+                placeholder="0,0"
+                keyboardType="decimal-pad"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}

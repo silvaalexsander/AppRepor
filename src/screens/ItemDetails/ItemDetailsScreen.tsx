@@ -60,13 +60,13 @@ export const ItemDetailsScreen = () => {
           <View style={styles.infoBlock}>
             <Text style={styles.infoLabel}>Qtd Atual</Text>
             <Text style={styles.infoValue}>
-              {item.currentQuantity} <Text style={styles.unit}>{item.unit}</Text>
+              {item.currentQuantity.toFixed(1).replace('.', ',')} <Text style={styles.unit}>{item.unit}</Text>
             </Text>
           </View>
           <View style={styles.infoBlock}>
             <Text style={styles.infoLabel}>Mínimo Ideal</Text>
             <Text style={styles.infoValue}>
-              {item.minimumQuantity} <Text style={styles.unit}>{item.unit}</Text>
+              {item.minimumQuantity.toFixed(1).replace('.', ',')} <Text style={styles.unit}>{item.unit}</Text>
             </Text>
           </View>
         </View>
