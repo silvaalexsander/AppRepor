@@ -1,0 +1,38 @@
+export type MovementType = 'CREATED' | 'ENTRY' | 'EXIT' | 'ADJUSTMENT';
+
+export type StockStatus = 'OK' | 'LOW' | 'BUY';
+
+export type ItemCategory = 
+  | 'Mercearia'
+  | 'Bebidas'
+  | 'Açougue'
+  | 'Matinais'
+  | 'Peixaria'
+  | 'Higiene'
+  | 'Limpeza'
+  | 'Outros'
+  | string;
+
+export type UnitType = 'un' | 'kg' | 'g' | 'l' | 'ml' | 'pct' | 'cx' | string;
+
+export interface Item {
+  id: string;
+  name: string;
+  category: ItemCategory;
+  unit: UnitType;
+  currentQuantity: number;
+  minimumQuantity: number;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Movement {
+  id: string;
+  itemId: string;
+  itemName: string;
+  type: MovementType;
+  quantity: number;
+  createdAt: string;
+  observation?: string;
+}
