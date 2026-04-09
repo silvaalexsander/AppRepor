@@ -10,6 +10,7 @@ export const CATEGORIES: ItemCategory[] = [
   'Mercearia',
   'Outros',
   'Pets',
+  'Padaria',
 ];
 
 export const UNITS: UnitType[] = ['un', 'kg', 'g', 'l', 'ml', 'pct', 'cx'];

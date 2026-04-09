@@ -12,6 +12,7 @@ export type ItemCategory =
   | 'Mercearia'
   | 'Outros'
   | 'Pets'
+  | 'Padaria'
   | string;
 
 export type UnitType = 'un' | 'kg' | 'g' | 'l' | 'ml' | 'pct' | 'cx' | string;

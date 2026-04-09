@@ -51,7 +51,11 @@ export const ComprarScreen = () => {
   const totalEstimate = useMemo(() => {
     return filteredItemsToBuy.reduce((sum, item) => {
       if (item.lastUnitPrice && item.lastUnitPrice > 0) {
-        const needed = Math.max(0, item.minimumQuantity - item.currentQuantity);
+        let needed = Math.max(0, item.minimumQuantity - item.currentQuantity);
+        // Se o mínimo ideal for 0, consideramos pelo menos 1 para a estimativa
+        if (item.minimumQuantity === 0 && needed === 0) {
+          needed = 1;
+        }
         return sum + (needed * item.lastUnitPrice);
       }
       return sum;
@@ -130,7 +134,10 @@ export const ComprarScreen = () => {
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContent}
             renderItem={({ item }) => {
-              const needed = Math.max(0, item.minimumQuantity - item.currentQuantity);
+              let needed = Math.max(0, item.minimumQuantity - item.currentQuantity);
+              if (item.minimumQuantity === 0 && needed === 0) {
+                needed = 1;
+              }
               const subtotal = item.lastUnitPrice ? needed * item.lastUnitPrice : null;
 
               return (
