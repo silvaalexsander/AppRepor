@@ -12,6 +12,7 @@ export type RootStackParamList = {
   Tabs: NavigatorScreenParams<BottomTabParamList>;
   ItemForm: { id?: string };
   ItemDetails: { id: string };
+  About: undefined;
 };
 
 export type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;

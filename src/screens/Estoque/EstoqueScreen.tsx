@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useLayoutEffect } from 'react';
 import { View, StyleSheet, FlatList, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { SortOption } from '../../types';
-import { LayoutGrid, ArrowDownAZ, Banknote, Calendar } from 'lucide-react-native';
+import { LayoutGrid, ArrowDownAZ, Banknote, Calendar, Info } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProp } from '../../navigation/types';
 import { useStore } from '../../store';
@@ -56,6 +56,20 @@ export const EstoqueScreen = () => {
   const handleItemPress = (id: string) => {
     navigation.navigate('ItemDetails', { id });
   };
+
+  const handleAbout = () => {
+    navigation.navigate('About');
+  };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={handleAbout} style={{ marginRight: spacing.md }}>
+          <Info size={24} color={colors.surface} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.container}>

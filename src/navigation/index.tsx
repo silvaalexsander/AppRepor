@@ -10,6 +10,7 @@ import { HistoricoScreen } from '../screens/Historico/HistoricoScreen';
 import { DetalhesScreen } from '../screens/Detalhes/DetalhesScreen';
 import { ItemFormScreen } from '../screens/ItemForm/ItemFormScreen';
 import { ItemDetailsScreen } from '../screens/ItemDetails/ItemDetailsScreen';
+import { AboutScreen } from '../screens/About/AboutScreen';
 
 import { BottomTabParamList, RootStackParamList } from './types';
 import { colors } from '../theme';
@@ -83,6 +84,13 @@ export const AppNavigator = () => {
             headerTitle: 'Detalhes do Item',
             headerStyle: { backgroundColor: colors.primary },
             headerTintColor: colors.surface,
+          }}
+        />
+        <Stack.Screen 
+          name="About" 
+          component={AboutScreen}
+          options={{
+            headerShown: false,
           }}
         />
       </Stack.Navigator>
