@@ -15,11 +15,15 @@ interface AppState {
   decreaseItem: (id: string, amount: number) => void;
   clearMovements: () => void;
   getItemById: (id: string) => Item | undefined;
+  cartItemIds: string[];
+  toggleCartItem: (id: string) => void;
+  resetCart: () => void;
 }
 
 export const useStore = create<AppState>((set, get) => ({
   items: [],
   movements: [],
+  cartItemIds: [],
   isHydrated: false,
 
   hydrate: async () => {
@@ -146,5 +150,19 @@ export const useStore = create<AppState>((set, get) => ({
 
   getItemById: (id) => {
     return get().items.find(item => item.id === id);
+  },
+
+  toggleCartItem: (id) => {
+    set((state) => {
+      const isAlreadyInCart = state.cartItemIds.includes(id);
+      const newCartItemIds = isAlreadyInCart
+        ? state.cartItemIds.filter(itemId => itemId !== id)
+        : [...state.cartItemIds, id];
+      return { cartItemIds: newCartItemIds };
+    });
+  },
+
+  resetCart: () => {
+    set({ cartItemIds: [] });
   }
 }));

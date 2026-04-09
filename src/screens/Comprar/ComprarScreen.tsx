@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, StyleSheet, FlatList, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { SortOption } from '../../types';
-import { ArrowDownAZ, Banknote, Calendar } from 'lucide-react-native';
+import { ArrowDownAZ, Banknote, Calendar, CheckCircle2, RotateCcw } from 'lucide-react-native';
 import { useStore } from '../../store';
 import { colors, spacing } from '../../theme';
 import { ShoppingCart } from 'lucide-react-native';
@@ -9,6 +9,9 @@ import { CATEGORIES } from '../../constants';
 
 export const ComprarScreen = () => {
   const items = useStore((state) => state.items);
+  const cartItemIds = useStore((state) => state.cartItemIds);
+  const toggleCartItem = useStore((state) => state.toggleCartItem);
+  const resetCart = useStore((state) => state.resetCart);
 
   const itemsToBuy = useMemo(() => {
     return items.filter(item => item.currentQuantity <= item.minimumQuantity);
@@ -52,7 +55,6 @@ export const ComprarScreen = () => {
     return filteredItemsToBuy.reduce((sum, item) => {
       if (item.lastUnitPrice && item.lastUnitPrice > 0) {
         let needed = Math.max(0, item.minimumQuantity - item.currentQuantity);
-        // Se o mínimo ideal for 0, consideramos pelo menos 1 para a estimativa
         if (item.minimumQuantity === 0 && needed === 0) {
           needed = 1;
         }
@@ -70,6 +72,12 @@ export const ComprarScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Precisa Comprar</Text>
+        {cartItemIds.length > 0 && (
+          <TouchableOpacity style={styles.resetButton} onPress={resetCart}>
+            <RotateCcw size={18} color={colors.textSecondary} />
+            <Text style={styles.resetButtonText}>Limpar Carrinho</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {itemsToBuy.length === 0 ? (
@@ -139,11 +147,23 @@ export const ComprarScreen = () => {
                 needed = 1;
               }
               const subtotal = item.lastUnitPrice ? needed * item.lastUnitPrice : null;
+              const isInCart = cartItemIds.includes(item.id);
 
               return (
-                <View style={styles.card}>
+                <View style={[styles.card, isInCart && styles.cardInCart]}>
                   <View style={styles.cardHeader}>
-                    <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
+                    <View style={styles.nameContainer}>
+                      <Text style={[styles.name, isInCart && styles.nameInCart]} numberOfLines={1}>{item.name}</Text>
+                    </View>
+                    <TouchableOpacity 
+                      style={styles.cartToggleButton} 
+                      onPress={() => toggleCartItem(item.id)}
+                    >
+                      <CheckCircle2 
+                        size={24} 
+                        color={isInCart ? colors.success : colors.border} 
+                      />
+                    </TouchableOpacity>
                   </View>
                   <View style={styles.cardBody}>
                     <View style={styles.infoCol}>
@@ -203,9 +223,26 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: spacing.md,
     paddingTop: spacing.lg,
     backgroundColor: colors.surface,
+  },
+  resetButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: '#F1F5F9',
+  },
+  resetButtonText: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    fontWeight: '600',
   },
   filterSection: {
     backgroundColor: colors.surface,
@@ -322,13 +359,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.03)',
   },
+  cardInCart: {
+    backgroundColor: '#F0FDF4',
+    borderColor: '#DCFCE7',
+    opacity: 0.8,
+  },
   cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: spacing.md,
+  },
+  nameContainer: {
+    flex: 1,
+    marginRight: spacing.sm,
   },
   name: {
     fontSize: 20,
     fontWeight: '700',
     color: colors.text,
+  },
+  nameInCart: {
+    textDecorationLine: 'line-through',
+    color: colors.textSecondary,
+  },
+  cartToggleButton: {
+    padding: 4,
   },
   cardBody: {
     flexDirection: 'row',
